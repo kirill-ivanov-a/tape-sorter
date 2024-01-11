@@ -83,5 +83,4 @@ void FileTape::UpdatePosition(std::streampos position) {
 
 std::streampos FileTape::before_begin{std::fstream::beg -
                                       std::streamoff(sizeof(int))};
-
 }  // namespace tape_sorter

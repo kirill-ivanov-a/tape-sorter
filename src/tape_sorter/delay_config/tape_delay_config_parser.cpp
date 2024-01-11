@@ -50,7 +50,7 @@ std::pair<std::string, std::string> ParseKeyValuePair(const std::string& input,
     }
   } else {
     std::stringstream msg_stream;
-    msg_stream << "Invalid key-value pair: " << input << " ."
+    msg_stream << "Invalid key-value pair: '" << input << "' ."
                << "Expected: <key>=<value>.\n";
     throw std::invalid_argument{msg_stream.str()};
   }
@@ -73,7 +73,15 @@ TapeDelayConfig TapeDelayConfigParser::Parse(const fs::path& config_path) {
 
     while (std::getline(file, line)) {
       auto [key, str_value] = ParseKeyValuePair(line);
-      auto value = std::stoll(str_value);
+      int64_t value;
+      try {
+        value = std::stoll(str_value);
+      }
+      catch (const std::ios::ios_base::failure&) {
+        std::stringstream msg_stream;
+        msg_stream << "Cannot convert string to long long: '" << str_value << "'\n";
+        throw std::ifstream::failure(msg_stream.str());
+      }
       data[key] = std::chrono::milliseconds(value);
     }
 
