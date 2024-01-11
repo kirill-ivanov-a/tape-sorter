@@ -76,10 +76,10 @@ TapeDelayConfig TapeDelayConfigParser::Parse(const fs::path& config_path) {
       int64_t value;
       try {
         value = std::stoll(str_value);
-      }
-      catch (const std::ios::ios_base::failure&) {
+      } catch (const std::ios::ios_base::failure&) {
         std::stringstream msg_stream;
-        msg_stream << "Cannot convert string to long long: '" << str_value << "'\n";
+        msg_stream << "Cannot convert string to long long: '" << str_value
+                   << "'\n";
         throw std::ifstream::failure(msg_stream.str());
       }
       data[key] = std::chrono::milliseconds(value);
