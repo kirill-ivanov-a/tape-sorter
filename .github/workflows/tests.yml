@@ -1,0 +1,35 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'scr/**'
+      - 'include/**'
+      - 'tests/**'
+      - '.gitignore'
+      - 'CMakeLists.txt'
+  pull_request:
+    branches: [ main ]
+
+env:
+  build_dir: "build"
+  build_type: "Release"
+
+jobs:
+  ubuntu:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [ g++, clang++ ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: |
+          cmake -B ${{ env.build_dir }}
+          cmake --build ${{ env.build_dir }} --config ${{ env.build_type }}
+
+      - name: Test
+        working-directory: ${{ github.workspace }}/build/tests
+        run: ctest -V -C ${{ env.build_type }}
