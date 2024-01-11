@@ -25,6 +25,10 @@ jobs:
         compiler: [ g++, clang++ ]
     steps:
       - uses: actions/checkout@v3
+      - name: Install apt dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y libboost-program-options-dev
       - name: Build
         run: |
           cmake -B ${{ env.build_dir }}
