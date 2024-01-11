@@ -1,6 +1,6 @@
 # tape-sorter
-[![tests](https://github.com/kirill-ivanov-a/tape-sorter/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/kirill-ivanov-a/prime-slam/actions/workflows/tests.yml)
-[![clang-format](https://github.com/kirill-ivanov-a/tape-sorter/actions/workflows/clang_format.yml/badge.svg?branch=main)](https://github.com/kirill-ivanov-a/prime-slam/actions/workflows/clang_format.yml)
+[![tests](https://github.com/kirill-ivanov-a/tape-sorter/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/kirill-ivanov-a/tape-sorter/actions/workflows/tests.yml)
+[![clang-format](https://github.com/kirill-ivanov-a/tape-sorter/actions/workflows/clang_format.yml/badge.svg?branch=main)](https://github.com/kirill-ivanov-a/tape-sorter/actions/workflows/clang_format.yml)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Application for sorting tapes providing a read, write and move interface.
