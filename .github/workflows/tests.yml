@@ -1,17 +1,6 @@
 name: tests
 
-on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'scr/**'
-      - 'include/**'
-      - 'tests/**'
-      - '.gitignore'
-      - 'CMakeLists.txt'
-  pull_request:
-    branches: [ main ]
+on: [push, pull_request]
 
 env:
   build_dir: "build"
