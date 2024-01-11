@@ -25,8 +25,7 @@ namespace tape_sorter {
 template <typename Comparator = std::greater<int>>
 class TapesPriorityQueue {
  public:
-  TapesPriorityQueue(
-      const std::vector<std::unique_ptr<tape_sorter::ITape>>& tapes);
+  TapesPriorityQueue(std::vector<std::unique_ptr<tape_sorter::ITape>> tapes);
 
   int Top();
 
@@ -40,6 +39,8 @@ class TapesPriorityQueue {
   struct TapeComparator;
 
  private:
+  // The queue holds pointers to temporary tapes until it is destroyed
+  std::vector<std::unique_ptr<tape_sorter::ITape>> tapes_;
   std::priority_queue<QueueItem, std::vector<QueueItem>, TapeComparator>
       tapes_queue_;
 };
@@ -63,8 +64,8 @@ struct TapesPriorityQueue<Comparator>::TapeComparator {
 
 template <typename Comparator>
 inline TapesPriorityQueue<Comparator>::TapesPriorityQueue(
-    const std::vector<std::unique_ptr<tape_sorter::ITape>>& tapes)
-    : tapes_queue_{tapes.begin(), tapes.end()} {}
+    std::vector<std::unique_ptr<tape_sorter::ITape>> tapes)
+    : tapes_(std::move(tapes)), tapes_queue_{tapes_.begin(), tapes_.end()} {}
 
 template <typename Comparator>
 inline bool TapesPriorityQueue<Comparator>::Empty() {

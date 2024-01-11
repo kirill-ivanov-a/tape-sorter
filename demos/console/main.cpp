@@ -12,8 +12,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-#include <memory>
-
 #include "tape_sorter/sort/tape_sorter.h"
 #include "tape_sorter/sort/temp_file_tape_creator.h"
 
@@ -22,10 +20,8 @@ int main() {
 
   std::filesystem::path output_tape_path{""};
 
-  std::shared_ptr<tape_sorter::ITape> input_tape =
-      std::make_shared<tape_sorter::FileTape>(input_tape_path);
-  std::shared_ptr<tape_sorter::ITape> output_tape =
-      std::make_shared<tape_sorter::FileTape>(output_tape_path);
+  auto input_tape = tape_sorter::FileTape{input_tape_path};
+  auto output_tape = tape_sorter::FileTape{output_tape_path};
 
   size_t buffer_size = 50;
   tape_sorter::TapeSorter{buffer_size}.Sort(input_tape, output_tape);

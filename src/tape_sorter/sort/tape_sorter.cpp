@@ -20,27 +20,25 @@ namespace tape_sorter {
 
 namespace {
 
-std::vector<int> ReadBlock(std::shared_ptr<ITape> input_tape,
-                           size_t buffer_size) {
+std::vector<int> ReadBlock(ITape& input_tape, size_t buffer_size) {
   std::vector<int> block;
   block.reserve(buffer_size);
 
-  for (auto i = 0; i != buffer_size && input_tape->Read(); ++i) {
-    auto value = input_tape->Read();
+  for (auto i = 0; i != buffer_size && input_tape.Read(); ++i) {
+    auto value = input_tape.Read();
     if (!value) {
       break;
     }
     block.push_back(value.value());
-    input_tape->MoveForward();
+    input_tape.MoveForward();
   }
   return block;
 }
 
-void WriteBlock(const std::unique_ptr<ITape>& input_tape,
-                const std::vector<int>& block) {
+void WriteBlock(ITape& input_tape, const std::vector<int>& block) {
   for (auto value : block) {
-    input_tape->Write(value);
-    input_tape->MoveForward();
+    input_tape.Write(value);
+    input_tape.MoveForward();
   }
 }
 
@@ -51,28 +49,26 @@ TapeSorter::TapeSorter(size_t max_buffer_size,
     : max_buffer_size_(max_buffer_size),
       temp_tape_creator_(std::move(temp_tape_creator)) {}
 
-void TapeSorter::Sort(std::shared_ptr<ITape> input_tape,
-                      std::shared_ptr<ITape> output_tape) const {
-  auto subtapes = SplitIntoSortedSubTapes(input_tape);
-  TapesPriorityQueue tapes_queue{subtapes};
+void TapeSorter::Sort(ITape& input_tape, ITape& output_tape) const {
+  TapesPriorityQueue tapes_queue{SplitIntoSortedSubTapes(input_tape)};
 
   while (!tapes_queue.Empty()) {
     auto min = tapes_queue.Top();
     tapes_queue.Pop();
-    output_tape->Write(min);
-    output_tape->MoveForward();
+    output_tape.Write(min);
+    output_tape.MoveForward();
   }
 }
 
 std::vector<std::unique_ptr<ITape>> TapeSorter::SplitIntoSortedSubTapes(
-    std::shared_ptr<ITape> input_tape) const {
+    ITape& input_tape) const {
   std::vector<std::unique_ptr<ITape>> subtapes;
-  while (input_tape->Read().has_value()) {
+  while (input_tape.Read().has_value()) {
     auto block = ReadBlock(input_tape, max_buffer_size_);
     std::sort(block.begin(), block.end(),
               [](auto&& lhs, auto&& rhs) { return lhs > rhs; });
     auto temp_tape = temp_tape_creator_->Create();
-    WriteBlock(temp_tape, block);
+    WriteBlock(*temp_tape, block);
     temp_tape->MoveBackward();
     subtapes.push_back(std::move(temp_tape));
   }

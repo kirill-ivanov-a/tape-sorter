@@ -19,8 +19,8 @@
 #include <queue>
 #include <vector>
 
-#include "tape_sorter/tape_interface.h"
 #include "tape_sorter/sort/temp_file_tape_creator.h"
+#include "tape_sorter/tape_interface.h"
 
 namespace tape_sorter {
 
@@ -30,12 +30,11 @@ class TapeSorter final {
              std::unique_ptr<ITempTapeCreator> temp_tape_creator =
                  std::make_unique<TempFileTapeCreator>());
 
-  void Sort(std::shared_ptr<ITape> input_tape,
-            std::shared_ptr<ITape> output_tape) const;
+  void Sort(ITape& input_tape, ITape& output_tape) const;
 
  private:
   std::vector<std::unique_ptr<ITape>> SplitIntoSortedSubTapes(
-      std::shared_ptr<ITape> input_tape) const;
+      ITape& input_tape) const;
 
  private:
   size_t max_buffer_size_;
