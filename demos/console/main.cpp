@@ -47,10 +47,10 @@ int main(int argc, char *argv[]) {
   po::store(
       po::command_line_parser(argc, argv).options(options_description).run(),
       parsed_variables);
-  po::notify(parsed_variables);
   if (parsed_variables.count("help") != 0u) {
     PrintHelpMessage(argv[0], options_description);
   } else {
+    po::notify(parsed_variables);
     auto input_tape_path = std::filesystem::path{
         parsed_variables[kInputFileTapePath].as<std::string>()};
     auto output_tape_path = std::filesystem::path{
