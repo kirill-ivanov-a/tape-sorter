@@ -45,6 +45,10 @@ std::optional<int> FileTape::Read() {
 
 void FileTape::Write(int value) {
   std::this_thread::sleep_for(delay_config_.write_delay);
+  if (current_position_ == before_begin) {
+    throw std::out_of_range(
+        "Writing to the before begin position is prohibited\n");
+  }
   tape_stream_.write(reinterpret_cast<char*>(&value), sizeof(value));
   UpdatePosition(current_position_);
 }
@@ -71,6 +75,7 @@ bool FileTape::MoveBackward() {
 
 void FileTape::Rewind() {
   std::this_thread::sleep_for(delay_config_.rewind_delay);
+  // Reset state
   tape_stream_.clear();
   UpdatePosition(std::fstream::beg);
 }

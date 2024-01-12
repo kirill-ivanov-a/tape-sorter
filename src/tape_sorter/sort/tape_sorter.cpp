@@ -25,11 +25,8 @@ std::vector<int> ReadBlock(ITape& input_tape, size_t buffer_size) {
   block.reserve(buffer_size);
 
   for (auto i = 0; i != buffer_size && input_tape.Read(); ++i) {
-    auto value = input_tape.Read();
-    if (!value) {
-      break;
-    }
-    block.push_back(value.value());
+    auto value = input_tape.Read().value();
+    block.push_back(value);
     input_tape.MoveForward();
   }
   return block;
@@ -63,12 +60,14 @@ void TapeSorter::Sort(ITape& input_tape, ITape& output_tape) const {
 std::vector<std::unique_ptr<ITape>> TapeSorter::SplitIntoSortedSubTapes(
     ITape& input_tape) const {
   std::vector<std::unique_ptr<ITape>> subtapes;
-  while (input_tape.Read().has_value()) {
+  while (input_tape.Read()) {
     auto block = ReadBlock(input_tape, max_buffer_size_);
+    // sort descending
     std::sort(block.begin(), block.end(),
               [](auto&& lhs, auto&& rhs) { return lhs > rhs; });
     auto temp_tape = temp_tape_creator_->Create();
     WriteBlock(*temp_tape, block);
+    // move to last (min) element
     temp_tape->MoveBackward();
     subtapes.push_back(std::move(temp_tape));
   }

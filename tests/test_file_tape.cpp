@@ -149,3 +149,9 @@ TEST_F(TestTape, MoveBeyondBeforeBegin) {
   tape.MoveBackward();  // move to before_begin
   ASSERT_EQ(tape.MoveBackward(), false);
 }
+
+TEST_F(TestTape, WriteBeforeBegin) {
+  auto& tape = GetTape();
+  tape.MoveBackward();  // move to before_begin
+  ASSERT_THROW(tape.Write(1), std::out_of_range);
+}

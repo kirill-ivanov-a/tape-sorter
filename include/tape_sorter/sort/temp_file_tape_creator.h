@@ -14,10 +14,11 @@
 
 #pragma once
 
+#include <filesystem>
 #include <memory>
 
 #include "tape_sorter/file_tape.h"
-#include "tape_sorter/sort/temp_tape_creator.h"
+#include "tape_sorter/sort/temp_tape_creator_interface.h"
 
 namespace tape_sorter {
 
