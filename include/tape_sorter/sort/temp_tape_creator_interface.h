@@ -14,14 +14,11 @@
 
 #pragma once
 
-#include <filesystem>
 #include <memory>
 
 #include "tape_sorter/tape_interface.h"
 
 namespace tape_sorter {
-
-namespace fs = std::filesystem;
 
 class ITempTapeCreator {
  public:

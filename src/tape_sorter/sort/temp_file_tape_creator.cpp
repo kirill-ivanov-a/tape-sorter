@@ -18,7 +18,10 @@ namespace tape_sorter {
 
 namespace {
 
-fs::path CreateTemporaryFilePath() { return fs::path(std::tmpnam(nullptr)); }
+fs::path CreateTemporaryFilePath() {
+  // NOTE: not thread safe
+  return fs::path(std::tmpnam(nullptr));
+}
 
 }  // namespace
 

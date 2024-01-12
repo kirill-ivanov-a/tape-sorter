@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <cstddef>
 #include <optional>
 
 namespace tape_sorter {

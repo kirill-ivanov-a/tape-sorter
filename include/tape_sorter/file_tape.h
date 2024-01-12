@@ -47,6 +47,7 @@ class FileTape : public ITape {
   std::fstream tape_stream_;
   std::streampos current_position_{std::fstream::beg};
   TapeDelayConfig delay_config_;
+  // boundary marker
   static std::streampos before_begin;
 };
 

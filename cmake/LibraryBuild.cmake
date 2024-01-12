@@ -2,7 +2,7 @@ set(LIBRARY_HEADER_FILES
         ${PROJECT_SOURCE_DIR}/include/tape_sorter/tape_interface.h
         ${PROJECT_SOURCE_DIR}/include/tape_sorter/file_tape.h
         ${PROJECT_SOURCE_DIR}/include/tape_sorter/sort/tape_sorter.h
-        ${PROJECT_SOURCE_DIR}/include/tape_sorter/sort/temp_tape_creator.h
+        ${PROJECT_SOURCE_DIR}/include/tape_sorter/sort/temp_tape_creator_interface.h
         ${PROJECT_SOURCE_DIR}/include/tape_sorter/sort/temp_file_tape_creator.h
         ${PROJECT_SOURCE_DIR}/include/tape_sorter/delay_config/tape_delay_config_parser.h
         ${PROJECT_SOURCE_DIR}/include/tape_sorter/delay_config/tape_delay_config.h
