@@ -13,11 +13,12 @@
 //   limitations under the License.
 
 #include <boost/program_options.hpp>
-
-#include "tape_sorter/sort/tape_sorter.h"
-#include "tape_sorter/sort/temp_file_tape_creator.h"
+#include <tape_sorter/sort/tape_sorter.h>
+#include <tape_sorter/sort/temp_file_tape_creator.h>
+#include <tape_sorter/delay_config/tape_delay_config_parser.h>
 
 namespace po = boost::program_options;
+namespace ts = tape_sorter;
 
 void PrintHelpMessage(const std::string &program_name,
                       const po::options_description &optionals) {
@@ -27,13 +28,14 @@ void PrintHelpMessage(const std::string &program_name,
 }
 
 int main(int argc, char *argv[]) {
+  constexpr const auto kHelp = "help";
   constexpr const auto kInputFileTapePath = "input-path";
   constexpr const auto kOutputFileTapePath = "output-path";
   constexpr const auto kDelayConfigPath = "delay-path";
   constexpr const auto kMaxBufferSize = "buffer";
 
   po::options_description options_description("Allowed options");
-  options_description.add_options()("help", "Produce help message")(
+  options_description.add_options()(kHelp, "Produce help message")(
       kInputFileTapePath, po::value<std::string>()->required(),
       "Path to input file tape")(kOutputFileTapePath,
                                  po::value<std::string>()->required(),
@@ -42,25 +44,51 @@ int main(int argc, char *argv[]) {
       "Path to tape delay config")(kMaxBufferSize,
                                    po::value<size_t>()->default_value(50),
                                    "Max buffer size");
+  po::positional_options_description positionals;
+  positionals.add(kInputFileTapePath, 1);
+  positionals.add(kOutputFileTapePath, 1);
+  positionals.add(kDelayConfigPath, 1);
 
-  po::variables_map parsed_variables;
-  po::store(
-      po::command_line_parser(argc, argv).options(options_description).run(),
-      parsed_variables);
-  if (parsed_variables.count("help") != 0u) {
+  try {
+    po::variables_map parsed_variables;
+    po::store(po::command_line_parser(argc, argv)
+                  .options(options_description)
+                  .positional(positionals)
+                  .run(),
+              parsed_variables);
+    if (parsed_variables.count(kHelp) != 0u) {
+      PrintHelpMessage(argv[0], options_description);
+    } else {
+      po::notify(parsed_variables);
+      auto input_tape_path = std::filesystem::path{
+          parsed_variables[kInputFileTapePath].as<std::string>()};
+      auto output_tape_path = std::filesystem::path{
+          parsed_variables[kOutputFileTapePath].as<std::string>()};
+      auto delay_config_path = std::filesystem::path{
+          parsed_variables[kDelayConfigPath].as<std::string>()};
+
+      auto delay_config = ts::TapeDelayConfigParser::Parse(delay_config_path);
+      auto input_tape = ts::FileTape{input_tape_path, delay_config};
+      auto output_tape = ts::FileTape{output_tape_path, delay_config};
+
+      auto buffer_size = parsed_variables[kMaxBufferSize].as<size_t>();
+      auto temp_tape_creator =
+          std::make_unique<ts::TempFileTapeCreator>(delay_config);
+      auto sorter = ts::TapeSorter{buffer_size, std::move(temp_tape_creator)};
+      sorter.Sort(input_tape, output_tape);
+      output_tape.Rewind();
+      while (output_tape.Read()) {
+        std::cout << output_tape.Read().value() << ' ';
+        output_tape.MoveForward();
+      }
+    }
+  } catch (po::error &e) {
+    std::cerr << "ERROR: " << e.what() << "\n";
     PrintHelpMessage(argv[0], options_description);
-  } else {
-    po::notify(parsed_variables);
-    auto input_tape_path = std::filesystem::path{
-        parsed_variables[kInputFileTapePath].as<std::string>()};
-    auto output_tape_path = std::filesystem::path{
-        parsed_variables[kOutputFileTapePath].as<std::string>()};
-
-    auto input_tape = tape_sorter::FileTape{input_tape_path};
-    auto output_tape = tape_sorter::FileTape{output_tape_path};
-
-    auto buffer_size = parsed_variables[kMaxBufferSize].as<size_t>();
-    tape_sorter::TapeSorter{buffer_size}.Sort(input_tape, output_tape);
+    return 1;
+  } catch (const std::runtime_error &error) {
+    std::cerr << "ERROR: " << error.what() << "\n";
+    return 1;
   }
 
   return 0;

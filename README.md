@@ -10,7 +10,12 @@ At the moment, a tape has been implemented, represented using the file.
 Since the tape may not fit completely in memory, an external sorting algorithm is used: several 
 temporary tapes are created, which are merged into the output tape
 ## Build
-To build use the following command:
+1. Install `Boost.Program_options` for console parsing:
+```shell
+sudo apt update
+sudo apt install -y libboost-program-options-dev
+```
+2. Build sources:
 ```shell
 mkdir build \
 && cd build \
@@ -18,8 +23,18 @@ mkdir build \
 ```
 ## Console demo
 See `demos/console`
+### Delay config
+To simulate tape delays, a configuration file in the following format is used:
 ```shell
-Usage: ./console_demo --input-path <PATH> --output-path <PATH> --path <PATH>
+move_delay = <NUM>
+read_delay = <NUM>
+write_delay = <NUM>
+rewind_delay = <NUM>
+```
+`<NUM>` represents an integer expressing the delay of the operation in milliseconds.
+### Usage
+```shell
+Usage: ./console_demo <INPUT_PATH> <OUTPUT_PATH> <DELAY_CONFIG_PATH> [options]
 Allowed options:
   --help                Produce help message
   --input-path arg      Path to input file tape
